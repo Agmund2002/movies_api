@@ -8,8 +8,8 @@ export class MovieUpdateDto {
   director?: string
 }
 
-export class MovieDto {
-  id: number
-  title: string
-  director: string
-}
+// export class MovieDto {
+//   id: number
+//   title: string
+//   director: string
+// }

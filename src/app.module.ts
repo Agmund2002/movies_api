@@ -9,9 +9,9 @@ import { MovieEntity } from './m/movie.entity'
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: process.env.TYPE,
+      type: 'mysql',
       host: process.env.HOST,
-      port: process.env.PORT,
+      port: Number(process.env.PORT),
       username: process.env.USERNAME,
       password: process.env.PASSWORD,
       database: process.env.DATABASE,

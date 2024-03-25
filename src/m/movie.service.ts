@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { MovieCreateDto, MovieDto, MovieUpdateDto } from './movie.dto'
+import { MovieCreateDto, MovieUpdateDto } from './movie.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { MovieEntity } from './movie.entity'
 import { Repository } from 'typeorm'
 
-@Injectable
+@Injectable()
 export class MovieService {
   constructor(
     @InjectRepository(MovieEntity) private moviesRepo: Repository<MovieEntity>
@@ -19,11 +19,12 @@ export class MovieService {
   }
 
   create(body: MovieCreateDto): Promise<MovieEntity> {
-    return this.moviesRepo.create(body)
+    return this.moviesRepo.save(body)
   }
 
-  update(id: number, body: MovieUpdateDto): Promise<MovieEntity> {
-    return this.moviesRepo.update(body)
+  async update(id: number, body: MovieUpdateDto): Promise<MovieEntity> {
+    await this.moviesRepo.update(id, body)
+    return this.moviesRepo.findOneBy({ id })
   }
 
   delete(id: number): void {
