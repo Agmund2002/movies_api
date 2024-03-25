@@ -5,15 +5,20 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param
+  Param,
+  Post,
+  Put
 } from '@nestjs/common'
-import { MovieCreateDto, MovieUpdateDto } from './movie.dto'
+import { MovieCreateDto, MovieDto, MovieUpdateDto } from './movie.dto'
+import { MovieService } from './movie.service'
 
 @Controller('movies')
 export class MovieController {
+  constructor(private movieService: MovieService) {}
+
   @Get()
-  getAll(): Array {
-    return []
+  getAll(): MovieDto[] {
+    return this.movieService.getAll()
   }
 
   @Get(':id')
