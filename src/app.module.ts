@@ -3,7 +3,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
-import { MovieEntity } from './m/movie.entity'
+import { MovieEntity } from './movies/movie.entity'
 
 @Module({
   imports: [
