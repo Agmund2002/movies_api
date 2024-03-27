@@ -1,9 +1,4 @@
-export class UserCreateDto {
+export class UserDto {
   email: string
   password: string
-}
-
-export class UserUpdateDto {
-  email?: string
-  password?: string
 }

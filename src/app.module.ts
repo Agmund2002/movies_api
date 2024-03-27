@@ -5,6 +5,8 @@ import { MovieEntity } from './movies/movie.entity'
 import { UserEntity } from './users/user.entity'
 import { MovieModule } from './movies/movie.module'
 import { UserModule } from './users/user.module'
+import { FavoritesModule } from './favorites/favorites.module'
+import { FavoritesEntity } from './favorites/favorites.entity'
 
 @Module({
   imports: [
@@ -16,11 +18,12 @@ import { UserModule } from './users/user.module'
       username: process.env.USERNAME,
       password: process.env.PASSWORD,
       database: process.env.DATABASE,
-      entities: [MovieEntity, UserEntity],
+      entities: [MovieEntity, UserEntity, FavoritesEntity],
       synchronize: true
     }),
     MovieModule,
-    UserModule
+    UserModule,
+    FavoritesModule
   ]
 })
 export class AppModule {}

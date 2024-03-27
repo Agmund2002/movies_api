@@ -4,12 +4,11 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus,
   Param,
   Post,
   Put
 } from '@nestjs/common'
-import { MovieCreateDto, MovieUpdateDto } from './movie.dto'
+import { MovieDto } from './movie.dto'
 import { MovieService } from './movie.service'
 import { MovieEntity } from './movie.entity'
 
@@ -29,20 +28,19 @@ export class MovieController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() body: MovieCreateDto): Promise<MovieEntity> {
+  create(@Body() body: MovieDto): Promise<MovieEntity> {
     return this.movieService.create(body)
   }
 
   @Put(':id')
   update(
     @Param('id') id: number,
-    @Body() body: MovieUpdateDto
+    @Body() body: Partial<MovieDto>
   ): Promise<MovieEntity> {
     return this.movieService.update(id, body)
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   delete(@Param('id') id: number): void {
     this.movieService.delete(id)
   }

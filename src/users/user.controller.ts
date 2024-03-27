@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Put } from '@nestjs/common'
 import { UserService } from './user.service'
-import { UserUpdateDto } from './user.dto'
+import { UserDto } from './user.dto'
 import { UserEntity } from './user.entity'
 
 @Controller('user')
@@ -16,8 +16,8 @@ export class UserController {
   @Put()
   update(
     id: number, // Тут те саме
-    @Body() body: UserUpdateDto
-  ): Promise<Omit<UserEntity, 'password'>> {
+    @Body() body: Partial<UserDto>
+  ): Promise<Pick<UserEntity, 'id' | 'email'>> {
     return this.userService.update(id, body)
   }
 }
