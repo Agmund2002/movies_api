@@ -1,10 +1,10 @@
-import { Column, Entity } from 'typeorm'
+// import { Column, Entity } from 'typeorm'
 
-@Entity()
-export class FavoritesEntity {
-  @Column()
-  movie_id: number
+// @Entity()
+// export class FavoritesEntity {
+//   @Column()
+//   movie_id: number
 
-  @Column()
-  user_id: number
-}
+//   @Column()
+//   user_id: number
+// }

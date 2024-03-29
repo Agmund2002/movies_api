@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put
@@ -22,8 +24,12 @@ export class MovieController {
   }
 
   @Get(':id')
-  getById(@Param('id') id: number): Promise<MovieEntity> {
-    return this.movieService.getById(id)
+  async getById(@Param('id') id: number): Promise<MovieEntity> {
+    const movie = await this.movieService.getById(id)
+    if (!movie) {
+      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
+    }
+    return movie
   }
 
   @Post()
@@ -33,15 +39,23 @@ export class MovieController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: number,
     @Body() body: Partial<MovieDto>
   ): Promise<MovieEntity> {
-    return this.movieService.update(id, body)
+    const movie = await this.movieService.update(id, body)
+    if (!movie) {
+      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
+    }
+    return movie
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number): void {
-    this.movieService.delete(id)
+  @HttpCode(204)
+  async delete(@Param('id') id: number): Promise<void> {
+    const movie = await this.movieService.delete(id)
+    if (!movie) {
+      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
+    }
   }
 }
