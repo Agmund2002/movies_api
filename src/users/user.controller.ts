@@ -1,4 +1,13 @@
-import { Controller, Get, Put, Body, Delete, HttpCode } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Put,
+  Body,
+  Delete,
+  HttpCode,
+  HttpException,
+  HttpStatus
+} from '@nestjs/common'
 import { UserService } from './user.service'
 import { UserDto } from './user.dto'
 import { UserEntity } from './user.entity'
@@ -11,6 +20,7 @@ export class UserController {
   @Get()
   profile(@CurrentUser() user: UserEntity): Pick<UserEntity, 'id' | 'email'> {
     const { id, email } = user
+
     return {
       id,
       email
@@ -18,11 +28,20 @@ export class UserController {
   }
 
   @Put()
-  update(
+  async update(
     @CurrentUser('id') id: number,
     @Body() body: Partial<UserDto>
   ): Promise<Pick<UserEntity, 'id' | 'email'>> {
-    return this.userService.update(id, body)
+    if (!Object.keys(body).length) {
+      throw new HttpException('Missing fields', HttpStatus.BAD_REQUEST)
+    }
+
+    const user = await this.userService.update(id, body)
+    if (typeof user === 'string') {
+      throw new HttpException(user, HttpStatus.CONFLICT)
+    }
+
+    return user
   }
 
   @Delete()

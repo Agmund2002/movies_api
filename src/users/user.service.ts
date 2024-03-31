@@ -13,10 +13,16 @@ export class UserService {
   async update(
     id: number,
     body: Partial<UserDto>
-  ): Promise<Pick<UserEntity, 'id' | 'email'>> {
-    await this.usersRepo.update(id, body)
-    const { email } = await this.usersRepo.findOneBy({ id })
-    return { id, email }
+  ): Promise<Pick<UserEntity, 'id' | 'email'> | string> {
+    try {
+      await this.usersRepo.update(id, body)
+      const { email } = await this.usersRepo.findOneBy({ id })
+      return { id, email }
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        return error.message
+      }
+    }
   }
 
   delete(id: number): Promise<DeleteResult> {

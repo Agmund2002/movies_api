@@ -13,7 +13,6 @@ import {
 import { MovieDto } from './movie.dto'
 import { MovieService } from './movie.service'
 import { MovieEntity } from './movie.entity'
-import { DeleteResult } from 'typeorm'
 
 @Controller('movies')
 export class MovieController {
@@ -30,6 +29,7 @@ export class MovieController {
     if (!movie) {
       throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
     }
+
     return movie
   }
 
@@ -40,6 +40,7 @@ export class MovieController {
     if (typeof movie === 'string') {
       throw new HttpException(movie, HttpStatus.CONFLICT)
     }
+
     return movie
   }
 
@@ -48,13 +49,19 @@ export class MovieController {
     @Param('id') id: number,
     @Body() body: Partial<MovieDto>
   ): Promise<MovieEntity> {
+    if (!Object.keys(body).length) {
+      throw new HttpException('Missing fields', HttpStatus.BAD_REQUEST)
+    }
+
     const movie = await this.movieService.update(id, body)
     if (!movie) {
       throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
     }
+
     if (typeof movie === 'string') {
       throw new HttpException(movie, HttpStatus.CONFLICT)
     }
+
     return movie
   }
 

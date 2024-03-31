@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { MovieDto } from './movie.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { MovieEntity } from './movie.entity'
