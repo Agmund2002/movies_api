@@ -5,7 +5,7 @@ export class MovieEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column()
+  @Column({ unique: true })
   title: string
 
   @Column()

@@ -5,7 +5,7 @@ import { UserModule } from 'src/users/user.module'
 import { MovieModule } from 'src/movies/movie.module'
 
 @Module({
-  // imports: [UserModule, MovieModule],
+  imports: [UserModule, MovieModule],
   controllers: [FavoritesController],
   providers: [FavoritesService]
 })

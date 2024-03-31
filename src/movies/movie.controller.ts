@@ -13,6 +13,7 @@ import {
 import { MovieDto } from './movie.dto'
 import { MovieService } from './movie.service'
 import { MovieEntity } from './movie.entity'
+import { DeleteResult } from 'typeorm'
 
 @Controller('movies')
 export class MovieController {
@@ -34,8 +35,12 @@ export class MovieController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() body: MovieDto): Promise<MovieEntity> {
-    return this.movieService.create(body)
+  async create(@Body() body: MovieDto): Promise<MovieEntity> {
+    const movie = await this.movieService.create(body)
+    if (typeof movie === 'string') {
+      throw new HttpException(movie, HttpStatus.CONFLICT)
+    }
+    return movie
   }
 
   @Put(':id')
@@ -47,6 +52,9 @@ export class MovieController {
     if (!movie) {
       throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
     }
+    if (typeof movie === 'string') {
+      throw new HttpException(movie, HttpStatus.CONFLICT)
+    }
     return movie
   }
 
@@ -54,7 +62,7 @@ export class MovieController {
   @HttpCode(204)
   async delete(@Param('id') id: number): Promise<void> {
     const movie = await this.movieService.delete(id)
-    if (!movie) {
+    if (movie.affected === 0) {
       throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
     }
   }

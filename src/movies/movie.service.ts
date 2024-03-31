@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { MovieDto } from './movie.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { MovieEntity } from './movie.entity'
@@ -14,23 +14,36 @@ export class MovieService {
     return this.moviesRepo.find()
   }
 
-  getById(id: number): Promise<MovieEntity> | null {
+  getById(id: number): Promise<MovieEntity | null> {
     return this.moviesRepo.findOneBy({ id })
   }
 
-  create(body: MovieDto): Promise<MovieEntity> {
-    return this.moviesRepo.save(body)
+  async create(body: MovieDto): Promise<MovieEntity | string> {
+    try {
+      const movie = await this.moviesRepo.save(body)
+      return movie
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        return error.message
+      }
+    }
   }
 
   async update(
     id: number,
     body: Partial<MovieDto>
-  ): Promise<MovieEntity> | null {
-    await this.moviesRepo.update(id, body)
-    return this.moviesRepo.findOneBy({ id })
+  ): Promise<MovieEntity | null | string> {
+    try {
+      await this.moviesRepo.update(id, body)
+      return this.moviesRepo.findOneBy({ id })
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        return error.message
+      }
+    }
   }
 
-  delete(id: number): Promise<DeleteResult> | null {
+  delete(id: number): Promise<DeleteResult> {
     return this.moviesRepo.delete(id)
   }
 }
