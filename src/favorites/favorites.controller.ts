@@ -1,19 +1,47 @@
-// import { Body, Controller, Delete, Post } from '@nestjs/common'
-// import { FavoritesDto } from './favorites.dto'
-// import { FavoritesService } from './favorites.service'
-// import { MovieEntity } from 'src/movies/movie.entity'
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch
+} from '@nestjs/common'
+import { FavoritesService } from './favorites.service'
+import { MovieEntity } from 'src/movies/movie.entity'
+import { CurrentUser } from 'src/decorators/user.decorator'
+import { UserEntity } from 'src/users/user.entity'
 
-// @Controller('favorites')
-// export class FavoritesController {
-//   constructor(private favorites: FavoritesService) {}
+@Controller('movies/favorites')
+export class FavoritesController {
+  constructor(private favorites: FavoritesService) {}
 
-//   @Post()
-//   add(@Body() body: FavoritesDto): Promise<MovieEntity> {
-//     return this.favorites.add(body)
-//   }
+  @Get()
+  getAll(@CurrentUser('movies') movies: number[]): Promise<MovieEntity[]> {
+    return this.favorites.getAll(movies)
+  }
 
-//   @Delete()
-//   delete(@Body() body: FavoritesDto): void {
-//     this.favorites.delete(body)
-//   }
-// }
+  @Patch('add/:movieId')
+  async add(
+    @CurrentUser() user: UserEntity,
+    @Param('movieId') movieId: number
+  ): Promise<MovieEntity> {
+    const movie = await this.favorites.add(user, movieId)
+    if (!movie) {
+      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
+    }
+    return movie
+  }
+
+  @Patch('delete/:movieId')
+  async delete(
+    @CurrentUser() user: UserEntity,
+    @Param('movieId') movieId: number
+  ): Promise<MovieEntity> {
+    const movie = await this.favorites.delete(user, movieId)
+    if (!movie) {
+      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
+    }
+    return movie
+  }
+}

@@ -1,22 +1,33 @@
-import { Controller } from '@nestjs/common'
+import { Controller, Get, Put, Body, Delete, HttpCode } from '@nestjs/common'
 import { UserService } from './user.service'
 import { UserDto } from './user.dto'
 import { UserEntity } from './user.entity'
+import { CurrentUser } from 'src/decorators/user.decorator'
 
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
+
   @Get()
-  // Для id треба декоратор який надасть доступ до req.user
-  current(id: number): Promise<Omit<UserEntity, 'password'>> {
-    const { password, ...user } = req.user
-    return user
+  profile(@CurrentUser() user: UserEntity): Pick<UserEntity, 'id' | 'email'> {
+    const { id, email } = user
+    return {
+      id,
+      email
+    }
   }
+
   @Put()
   update(
-    id: number, // Тут те саме
+    @CurrentUser('id') id: number,
     @Body() body: Partial<UserDto>
   ): Promise<Pick<UserEntity, 'id' | 'email'>> {
     return this.userService.update(id, body)
+  }
+
+  @Delete()
+  @HttpCode(204)
+  delete(@CurrentUser('id') id: number): void {
+    this.userService.delete(id)
   }
 }

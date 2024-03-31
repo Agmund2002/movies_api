@@ -1,11 +1,5 @@
 import { MovieEntity } from 'src/movies/movie.entity'
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn
-} from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -18,17 +12,6 @@ export class UserEntity {
   @Column()
   password: string
 
-  @ManyToMany(() => MovieEntity)
-  @JoinTable({
-    name: 'favorites',
-    joinColumn: {
-      name: 'user_id',
-      referencedColumnName: 'id'
-    },
-    inverseJoinColumn: {
-      name: 'movie_id',
-      referencedColumnName: 'id'
-    }
-  })
-  movies: MovieEntity[]
+  @Column('simple-json')
+  movies: number[]
 }
