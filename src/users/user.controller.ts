@@ -9,7 +9,7 @@ import {
   HttpStatus
 } from '@nestjs/common'
 import { UserService } from './user.service'
-import { UserDto } from './user.dto'
+import { UserUpdateDto } from './user.dto'
 import { UserEntity } from './user.entity'
 import { CurrentUser } from 'src/decorators/user.decorator'
 
@@ -30,10 +30,14 @@ export class UserController {
   @Put()
   async update(
     @CurrentUser('id') id: number,
-    @Body() body: Partial<UserDto>
+    @Body() body: UserUpdateDto
   ): Promise<Pick<UserEntity, 'id' | 'email'>> {
-    if (!Object.keys(body).length) {
-      throw new HttpException('Missing fields', HttpStatus.BAD_REQUEST)
+    const { email, password } = body
+    if (!email && !password) {
+      throw new HttpException(
+        'Missing fields: email, password',
+        HttpStatus.BAD_REQUEST
+      )
     }
 
     const user = await this.userService.update(id, body)

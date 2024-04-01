@@ -1,6 +1,6 @@
-import { IsString, MaxLength } from 'class-validator'
+import { IsOptional, IsString, MaxLength } from 'class-validator'
 
-export class MovieDto {
+export class MovieCreateDto {
   @IsString()
   @MaxLength(50)
   title: string
@@ -8,4 +8,16 @@ export class MovieDto {
   @IsString()
   @MaxLength(50)
   director: string
+}
+
+export class MovieUpdateDto {
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  title?: string
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  director?: string
 }

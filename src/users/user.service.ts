@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserEntity } from './user.entity'
 import { DeleteResult, Repository } from 'typeorm'
-import { UserDto } from './user.dto'
+import { UserUpdateDto } from './user.dto'
 
 @Injectable()
 export class UserService {
@@ -12,7 +12,7 @@ export class UserService {
 
   async update(
     id: number,
-    body: Partial<UserDto>
+    body: UserUpdateDto
   ): Promise<Pick<UserEntity, 'id' | 'email'> | string> {
     try {
       await this.usersRepo.update(id, body)

@@ -10,7 +10,7 @@ import {
   Post,
   Put
 } from '@nestjs/common'
-import { MovieDto } from './movie.dto'
+import { MovieCreateDto, MovieUpdateDto } from './movie.dto'
 import { MovieService } from './movie.service'
 import { MovieEntity } from './movie.entity'
 
@@ -35,7 +35,7 @@ export class MovieController {
 
   @Post()
   @HttpCode(201)
-  async create(@Body() body: MovieDto): Promise<MovieEntity> {
+  async create(@Body() body: MovieCreateDto): Promise<MovieEntity> {
     const movie = await this.movieService.create(body)
     if (typeof movie === 'string') {
       throw new HttpException(movie, HttpStatus.CONFLICT)
@@ -47,10 +47,14 @@ export class MovieController {
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() body: Partial<MovieDto>
+    @Body() body: MovieUpdateDto
   ): Promise<MovieEntity> {
-    if (!Object.keys(body).length) {
-      throw new HttpException('Missing fields', HttpStatus.BAD_REQUEST)
+    const { title, director } = body
+    if (!title && !director) {
+      throw new HttpException(
+        'Missing fields: title, director',
+        HttpStatus.BAD_REQUEST
+      )
     }
 
     const movie = await this.movieService.update(id, body)
