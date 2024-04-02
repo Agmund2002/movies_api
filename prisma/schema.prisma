@@ -18,4 +18,29 @@ model Movie {
   id       Int    @id @default(autoincrement())
   title    String @unique @db.VarChar(50)
   director String @db.VarChar(50)
+
+  users FavoriteMovie[]
+
+  @@map("movie")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique @db.VarChar(50)
+  password String @db.VarChar(100)
+
+  movies FavoriteMovie[]
+
+  @@map("user")
+}
+
+model FavoriteMovie {
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @map("user_id")
+
+  movie   Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  movieId Int   @map("movie_id")
+
+  @@id([userId, movieId])
+  @@map("favorite_movie")
 }
