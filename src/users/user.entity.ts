@@ -1,4 +1,3 @@
-import { MovieEntity } from 'src/movies/movie.entity'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity({ name: 'users' })

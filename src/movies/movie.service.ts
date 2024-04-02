@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common'
 import { MovieCreateDto, MovieUpdateDto } from './movie.dto'
-import { InjectRepository } from '@nestjs/typeorm'
 import { MovieEntity } from './movie.entity'
-import { DeleteResult, Repository } from 'typeorm'
+import { DeleteResult } from 'typeorm'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { Movie, Prisma } from '@prisma/client'
 
 @Injectable()
 export class MovieService {
-  constructor(
-    @InjectRepository(MovieEntity) private moviesRepo: Repository<MovieEntity>
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  getAll(): Promise<MovieEntity[]> {
-    return this.moviesRepo.find()
+  getAll(): Promise<Movie[]> {
+    return this.prisma.movie.findMany()
   }
 
   getById(id: number): Promise<MovieEntity | null> {
-    return this.moviesRepo.findOneBy({ id })
+    return this.prisma.movie.findUnique()
   }
 
-  async create(body: MovieCreateDto): Promise<MovieEntity | string> {
+  async create(body: Prisma.MovieCreateInput): Promise<Movie> {
     try {
       const movie = await this.moviesRepo.save(body)
       return movie
