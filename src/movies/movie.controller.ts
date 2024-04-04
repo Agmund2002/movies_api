@@ -10,71 +10,62 @@ import {
   Post,
   Put
 } from '@nestjs/common'
-import { MovieCreateDto, MovieUpdateDto } from './movie.dto'
 import { MovieService } from './movie.service'
-import { MovieEntity } from './movie.entity'
+import { Movie, Prisma } from '@prisma/client'
+import { MovieCreateDto, MovieUpdateDto } from './movie.dto'
+import { ErrorHandler } from 'src/helpers/error.catcher'
+import { IsEmptyBody } from 'src/decorators/is-empty-body.decorator'
 
 @Controller('movies')
-export class MovieController {
-  constructor(private movieService: MovieService) {}
+export class MovieController extends ErrorHandler {
+  constructor(private movieService: MovieService) {
+    super()
+  }
 
   @Get()
-  getAll(): Promise<MovieEntity[]> {
+  getAll(): Promise<Movie[]> {
     return this.movieService.getAll()
   }
 
   @Get(':id')
-  async getById(@Param('id') id: number): Promise<MovieEntity> {
-    const movie = await this.movieService.getById(id)
-    if (!movie) {
-      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
-    }
+  async getById(@Param('id') id: number): Promise<Movie> {
+    const movie = await this.movieService.getById(Number(id))
+    if (!movie) throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
 
     return movie
   }
 
   @Post()
   @HttpCode(201)
-  async create(@Body() body: MovieCreateDto): Promise<MovieEntity> {
-    const movie = await this.movieService.create(body)
-    if (typeof movie === 'string') {
-      throw new HttpException(movie, HttpStatus.CONFLICT)
+  async create(@Body() body: MovieCreateDto): Promise<Movie> {
+    try {
+      const movie = await this.movieService.create(body)
+      return movie
+    } catch (error) {
+      this.giveCurrentResponse(error)
     }
-
-    return movie
   }
 
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() body: MovieUpdateDto
-  ): Promise<MovieEntity> {
-    const { title, director } = body
-    if (!title && !director) {
-      throw new HttpException(
-        'Missing fields: title, director',
-        HttpStatus.BAD_REQUEST
-      )
+    @Body() @IsEmptyBody(MovieCreateDto) body: MovieUpdateDto
+  ): Promise<Movie> {
+    try {
+      const movie = await this.movieService.update(Number(id), body)
+      return movie
+    } catch (error) {
+      this.giveCurrentResponse(error)
     }
-
-    const movie = await this.movieService.update(id, body)
-    if (!movie) {
-      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
-    }
-
-    if (typeof movie === 'string') {
-      throw new HttpException(movie, HttpStatus.CONFLICT)
-    }
-
-    return movie
   }
 
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id') id: number): Promise<void> {
-    const movie = await this.movieService.delete(id)
-    if (movie.affected === 0) {
-      throw new HttpException('Movie not found', HttpStatus.NOT_FOUND)
+    try {
+      await this.movieService.delete(Number(id))
+    } catch (error) {
+      this.giveCurrentResponse(error)
     }
   }
 }
